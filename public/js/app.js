@@ -282,11 +282,12 @@ document.addEventListener('DOMContentLoaded', () => {
   window.app = new ScrumPokerHome();
 });
 
-// Service worker registration (for PWA capabilities)
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(err => {
-      console.log('ServiceWorker registration failed: ', err);
-    });
-  });
-}
+// DO NOT INCLUDE SERVICE WORKER REGISTRATION
+// The following code should NOT be in your file:
+// if ('serviceWorker' in navigator) {
+//   window.addEventListener('load', () => {
+//     navigator.serviceWorker.register('/sw.js').catch(err => {
+//       console.log('ServiceWorker registration failed: ', err);
+//     });
+//   });
+// }
