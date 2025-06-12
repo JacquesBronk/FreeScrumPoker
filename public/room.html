@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrum Poker - Room</title>
+    <meta name="description" content="Scrum poker estimation session in progress">
+    
+    <!-- Prevent zoom on mobile inputs -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🃏</text></svg>">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="room-container">
+        <!-- Room Header -->
+        <header class="room-header">
+            <div class="room-info">
+                <h1 class="room-title" id="roomTitle">Loading...</h1>
+                <div class="room-meta">
+                    <span class="room-id" id="roomId">Room: ...</span>
+                    <button class="share-btn" onclick="shareRoom()" title="Share room link">
+                        📋 Share
+                    </button>
+                </div>
+            </div>
+            <div class="connection-status" id="connectionStatus">
+                <div class="status-indicator online" id="statusIndicator"></div>
+                <span id="statusText">Connected</span>
+            </div>
+        </header>
+
+        <div class="room-layout">
+            <!-- Story Section -->
+            <section class="story-section" id="storySection">
+                <!-- Story Header -->
+                <div class="story-header">
+                    <div class="story-controls">
+                        <button class="quick-btn" onclick="showStoryModal()" title="Edit story details">
+                            📝 Edit Story
+                        </button>
+                        <button class="quick-btn" onclick="showTemplatesModal()" title="Use story template">
+                            📋 Templates
+                        </button>
+                        <button class="quick-btn" onclick="toggleEstimationType()" title="Change estimation type">
+                            <span id="estimationTypeBtn">📊 Complexity</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Timer Controls -->
+                    <div class="timer-controls" id="timerControls">
+                        <input type="number" id="timerMinutes" min="1" max="60" value="5" class="timer-input">
+                        <span>min</span>
+                        <button class="timer-btn" id="timerBtn" onclick="toggleTimer()">Start</button>
+                        <div class="timer-display hidden" id="timerDisplay">
+                            <div class="timer-icon"></div>
+                            <span id="timerText">5:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Story Content -->
+                <div class="story-content">
+                    <div class="story-title-container">
+                        <h2 class="story-title editable" id="storyTitle" contenteditable="true" placeholder="Click to add story title...">
+                            Ready to estimate your first story?
+                        </h2>
+                    </div>
+                    
+                    <div class="story-description" id="storyDescription">
+                        <p class="placeholder-text">Add a story description to help your team understand what needs to be estimated.</p>
+                    </div>
+                    
+                    <!-- Story Links -->
+                    <div class="story-links hidden" id="storyLinks"></div>
+                    
+                    <!-- Acceptance Criteria -->
+                    <div class="acceptance-criteria hidden" id="acceptanceCriteria"></div>
+                </div>
+            </section>
+
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <!-- Voting Section -->
+                <section class="voting-section">
+                    <div class="voting-header">
+                        <h3 class="voting-title">Choose Your Estimate</h3>
+                        <p class="voting-subtitle" id="votingSubtitle">Select a card that represents the complexity</p>
+                    </div>
+                    
+                    <!-- Card Set Selector -->
+                    <div class="card-set-selector" id="cardSetSelector">
+                        <select id="cardSetSelect" class="card-set-select" onchange="changeCardSet()">
+                            <option value="fibonacci">Fibonacci</option>
+                            <option value="tshirt">T-Shirt Sizes</option>
+                            <option value="powers">Powers of 2</option>
+                            <option value="linear">Linear</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Voting Cards -->
+                    <div class="voting-cards" id="votingCards">
+                        <!-- Cards will be dynamically generated -->
+                    </div>
+                    
+                    <!-- Confidence Selector -->
+                    <div class="confidence-selector" id="confidenceSelector">
+                        <p class="confidence-label">How confident are you in this estimate?</p>
+                        <div class="confidence-options">
+                            <button class="confidence-btn" data-confidence="low">Low</button>
+                            <button class="confidence-btn active" data-confidence="medium">Medium</button>
+                            <button class="confidence-btn" data-confidence="high">High</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Results Section -->
+                <section class="results-section hidden" id="resultsSection">
+                    <div class="results-header">
+                        <h3>Voting Results</h3>
+                        <div class="results-summary" id="resultsSummary"></div>
+                    </div>
+                    <div class="results-grid" id="resultsGrid">
+                        <!-- Results will be dynamically generated -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Participants Panel -->
+                <div class="panel participants-panel">
+                    <h3 class="panel-title">
+                        <span class="panel-icon">👥</span>
+                        <span>Participants</span>
+                        <span class="participant-count" id="participantCount">(0)</span>
+                    </h3>
+                    <div class="participants-list" id="participantsList">
+                        <!-- Participants will be dynamically generated -->
+                    </div>
+                </div>
+
+                <!-- Actions Panel -->
+                <div class="panel actions-panel">
+                    <h3 class="panel-title">
+                        <span class="panel-icon">⚡</span>
+                        <span>Actions</span>
+                    </h3>
+                    <div class="action-buttons">
+                        <button class="action-btn primary" id="revealBtn" onclick="toggleRevealCards()">
+                            Reveal Cards
+                        </button>
+                        <button class="action-btn secondary" onclick="clearVotes()">
+                            Clear Votes
+                        </button>
+                        <button class="action-btn secondary" onclick="completeStory()">
+                            Complete Story
+                        </button>
+                        <button class="action-btn secondary" onclick="exportSession()">
+                            Export Session
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Session History -->
+                <div class="panel history-panel">
+                    <h3 class="panel-title">
+                        <span class="panel-icon">📜</span>
+                        <span>Completed Stories</span>
+                        <span class="story-count" id="storyCount">(0)</span>
+                    </h3>
+                    <div class="completed-stories" id="completedStories">
+                        <p class="empty-state">No completed stories yet</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Story Edit Modal -->
+    <div id="storyModal" class="modal hidden">
+        <div class="modal-content large">
+            <h3>Edit Story Details</h3>
+            
+            <!-- Template Selector -->
+            <div class="form-group">
+                <label>Story Template</label>
+                <div class="template-selector" id="templateSelector">
+                    <!-- Templates will be loaded dynamically -->
+                </div>
+            </div>
+            
+            <!-- Story Details -->
+            <div class="form-group">
+                <label for="modalStoryTitle">Story Title</label>
+                <input type="text" id="modalStoryTitle" class="form-input" placeholder="Enter story title">
+            </div>
+            
+            <div class="form-group">
+                <label for="modalStoryDescription">Description</label>
+                <textarea id="modalStoryDescription" class="form-textarea" rows="4" placeholder="Describe what needs to be built..."></textarea>
+            </div>
+            
+            <!-- Links Section -->
+            <div class="form-group">
+                <label>Related Links</label>
+                <div class="links-section" id="linksSection">
+                    <div class="link-item">
+                        <input type="text" class="form-input link-label" placeholder="Label" value="">
+                        <input type="url" class="form-input link-url" placeholder="https://" value="">
+                        <button type="button" class="remove-link-btn" onclick="removeLink(this)">×</button>
+                    </div>
+                </div>
+                <button type="button" class="add-link-btn" onclick="addLink()">+ Add Link</button>
+            </div>
+            
+            <!-- Acceptance Criteria -->
+            <div class="form-group">
+                <label>Acceptance Criteria</label>
+                <div class="criteria-section" id="criteriaSection">
+                    <div class="criteria-item">
+                        <input type="checkbox" class="criteria-checkbox">
+                        <input type="text" class="criteria-text" placeholder="Add acceptance criterion...">
+                        <button type="button" class="remove-criteria-btn" onclick="removeCriteria(this)">×</button>
+                    </div>
+                </div>
+                <button type="button" class="add-criteria-btn" onclick="addCriteria()">+ Add Criterion</button>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="action-btn secondary" onclick="closeModal('storyModal')">Cancel</button>
+                <button type="button" class="action-btn primary" onclick="saveStory()">Save Story</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates Modal -->
+    <div id="templatesModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Story Templates</h3>
+            <div class="templates-grid" id="templatesGrid">
+                <!-- Templates will be loaded dynamically -->
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="action-btn secondary" onclick="closeModal('templatesModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Cards Modal -->
+    <div id="customCardsModal" class="modal hidden">
+        <div class="modal-content large">
+            <h3>Custom Card Set</h3>
+            <div class="form-group">
+                <label>Card Set Name</label>
+                <input type="text" id="customCardSetName" class="form-input" placeholder="Enter card set name">
+            </div>
+            <div class="form-group">
+                <label>Cards</label>
+                <div class="custom-cards-section" id="customCardsSection">
+                    <!-- Custom cards editor -->
+                </div>
+                <button type="button" class="add-card-btn" onclick="addCustomCard()">+ Add Card</button>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="action-btn secondary" onclick="closeModal('customCardsModal')">Cancel</button>
+                <button type="button" class="action-btn primary" onclick="saveCustomCards()">Save Cards</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error/Success Toast -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <span id="toastMessage"></span>
+            <button class="toast-close" onclick="hideToast()">×</button>
+        </div>
+    </div>
+
+    <!-- Copy Link Modal -->
+    <div id="copyLinkModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Share Room</h3>
+            <div class="form-group">
+                <label>Room Link</label>
+                <div class="copy-link-container">
+                    <input type="text" id="roomLinkInput" class="form-input" readonly>
+                    <button class="copy-btn" onclick="copyRoomLink()">Copy</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Quick Invite</label>
+                <div class="quick-invite">
+                    <p>Share this room code with your team:</p>
+                    <div class="room-code-display" id="roomCodeDisplay"></div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="action-btn primary" onclick="closeModal('copyLinkModal')">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/room.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+services:
+  scrum-poker:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5555:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    restart: unless-stopped
+    volumes:
+      - ./teamDefaults.json:/usr/src/app/teamDefaults.json
+      - ./logs:/usr/src/app/logs
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

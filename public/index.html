@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrum Poker - Free Online Planning Poker for Agile Teams</title>
+    <meta name="description" content="Free scrum poker tool for agile estimation. Create rooms, vote with Fibonacci or custom cards, perfect for remote sprint planning. No signup required.">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Scrum Poker - Free Online Planning Poker">
+    <meta property="og:description" content="Free scrum poker tool for agile teams. Create rooms instantly, vote with custom cards.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://scrumpoker.app">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🃏</text></svg>">
+    
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🃏</span>
+                <h1 class="logo-text">Scrum Poker</h1>
+            </div>
+            <p class="tagline">Free online planning poker for agile teams</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="action-card create-room">
+                    <div class="action-icon">➕</div>
+                    <h2>Create New Room</h2>
+                    <p>Start a new estimation session for your team</p>
+                    <button class="action-btn primary" onclick="createRoom()">
+                        Create Room
+                    </button>
+                </div>
+
+                <div class="action-card join-room">
+                    <div class="action-icon">🚪</div>
+                    <h2>Join Existing Room</h2>
+                    <p>Enter a room code to join your team's session</p>
+                    <div class="join-form">
+                        <input 
+                            type="text" 
+                            id="roomCode" 
+                            placeholder="Enter room code"
+                            class="room-input"
+                            maxlength="20"
+                        >
+                        <button class="action-btn secondary" onclick="joinRoom()">
+                            Join Room
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features">
+                <h2 class="features-title">Why Choose Scrum Poker?</h2>
+                <div class="features-grid">
+                    <div class="feature">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Instant Setup</h3>
+                        <p>No accounts, no downloads. Create a room and start estimating in seconds.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🎨</div>
+                        <h3>Customizable Cards</h3>
+                        <p>Fibonacci, T-shirt sizes, or create your own custom estimation scale.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📱</div>
+                        <h3>Mobile Friendly</h3>
+                        <p>Works perfectly on desktop, tablet, and mobile devices.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Privacy First</h3>
+                        <p>No data collection, no tracking. Your estimates stay private.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">⏱️</div>
+                        <h3>Discussion Timer</h3>
+                        <p>Built-in timer to keep estimation discussions focused and productive.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📊</div>
+                        <h3>Export Results</h3>
+                        <p>Export your estimation sessions for sprint planning and documentation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="how-it-works">
+                <h2>How It Works</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Create or Join Room</h3>
+                        <p>Start a new room or join with a room code</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Add Your Story</h3>
+                        <p>Describe the user story or task to estimate</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Vote Together</h3>
+                        <p>Team members select their estimates simultaneously</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>Reveal & Discuss</h3>
+                        <p>See all votes and discuss any differences</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2024 Scrum Poker. Free and open source.</p>
+                <div class="footer-links">
+                    <a href="https://github.com/yourusername/scrum-poker" target="_blank">GitHub</a>
+                    <a href="/api/health" target="_blank">Status</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Creating room...</p>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Error</h3>
+            <p id="errorMessage"></p>
+            <button onclick="closeModal('errorModal')" class="action-btn secondary">OK</button>
+        </div>
+    </div>
+
+    <!-- Room Creation Modal -->
+    <div id="roomModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Create New Room</h3>
+            <div class="form-group">
+                <label for="userName">Your Name</label>
+                <input 
+                    type="text" 
+                    id="userName" 
+                    placeholder="Enter your name"
+                    class="form-input"
+                    maxlength="50"
+                >
+            </div>
+            <div class="form-group">
+                <label for="userRole">Your Role</label>
+                <select id="userRole" class="form-input">
+                    <option value="voter">Voter (Product Owner/Developer)</option>
+                    <option value="observer">Observer (Stakeholder/Manager)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="teamKey">Team Key (Optional)</label>
+                <input 
+                    type="text" 
+                    id="teamKey" 
+                    placeholder="team-alpha (for saved preferences)"
+                    class="form-input"
+                    maxlength="50"
+                >
+                <small>Use the same team key to load your team's preferred settings</small>
+            </div>
+            <div class="modal-actions">
+                <button onclick="closeModal('roomModal')" class="action-btn secondary">Cancel</button>
+                <button onclick="confirmCreateRoom()" class="action-btn primary">Create Room</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Join Room Modal -->
+    <div id="joinModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Join Room</h3>
+            <div class="form-group">
+                <label for="joinUserName">Your Name</label>
+                <input 
+                    type="text" 
+                    id="joinUserName" 
+                    placeholder="Enter your name"
+                    class="form-input"
+                    maxlength="50"
+                >
+            </div>
+            <div class="form-group">
+                <label for="joinUserRole">Your Role</label>
+                <select id="joinUserRole" class="form-input">
+                    <option value="voter">Voter (Product Owner/Developer)</option>
+                    <option value="observer">Observer (Stakeholder/Manager)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="joinRoomCode">Room Code</label>
+                <input 
+                    type="text" 
+                    id="joinRoomCode" 
+                    placeholder="Enter room code"
+                    class="form-input"
+                    maxlength="50"
+                >
+            </div>
+            <div class="modal-actions">
+                <button onclick="closeModal('joinModal')" class="action-btn secondary">Cancel</button>
+                <button onclick="confirmJoinRoom()" class="action-btn primary">Join Room</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
